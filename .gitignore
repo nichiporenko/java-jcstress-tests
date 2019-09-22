@@ -1,0 +1,7 @@
+/target
+/out
+/.idea
+/results
+
+*.iml
+*.gz
