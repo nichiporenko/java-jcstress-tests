@@ -14,5 +14,5 @@ mvn clean install
 ### 3. Run specific test
 ```
 mvn clean install
-java -jar target/jcstress.jar -t "LongFieldWrite*"
+java -jar target/jcstress.jar -t "LongFieldWrite.*"
 ```
