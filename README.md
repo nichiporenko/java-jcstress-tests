@@ -9,7 +9,7 @@ java -jar target/jcstress.jar -v
 ### 2. On a specific JVM
 ```
 mvn clean install
-C:\Program Files (x86)\Java\jre1.8.0_221\bin\java.exe -jar target/jcstress.jar -v
+"C:\Program Files (x86)\Java\jre1.8.0_221\bin\java.exe" -jar target/jcstress.jar -v
 ```
 ### 3. From specific class or package
 ```
