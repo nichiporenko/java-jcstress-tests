@@ -1,4 +1,4 @@
-package com.nichiporenko.harness.jcstress.tests.atomicity;
+package com.nichiporenko.harness.jcstress.tests.volatiles;
 
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.J_Result;
@@ -9,11 +9,11 @@ import org.openjdk.jcstress.infra.results.J_Result;
 @JCStressTest
 @Outcome(id = "0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "-1", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
-@Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
+@Outcome(id = "", expect = Expect.FORBIDDEN, desc = "Observer sees the torn value.")
 @State
-public class LongAtomicityTest {
+public class VolatileWriteLongTest {
 
-    long v;
+    volatile long v;
 
     @Actor
     public void actor1(J_Result r) {

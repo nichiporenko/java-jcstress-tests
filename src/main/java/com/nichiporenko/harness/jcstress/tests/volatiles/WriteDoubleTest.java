@@ -1,4 +1,4 @@
-package com.nichiporenko.harness.jcstress.tests.atomicity;
+package com.nichiporenko.harness.jcstress.tests.volatiles;
 
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.D_Result;
@@ -9,11 +9,11 @@ import org.openjdk.jcstress.infra.results.D_Result;
 @JCStressTest
 @Outcome(id = "0.0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "123.12345678", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
-@Outcome(id = "", expect = Expect.FORBIDDEN, desc = "Observer sees the torn value.")
+@Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
 @State
-public class VolatileDoubleAtomicityTest {
+public class WriteDoubleTest {
 
-    volatile double v;
+    double v;
 
     @Actor
     public void actor1(D_Result r) {
