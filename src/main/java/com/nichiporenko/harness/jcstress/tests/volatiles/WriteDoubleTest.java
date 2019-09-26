@@ -4,7 +4,8 @@ import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.D_Result;
 
 /*
- * Of course, in order to see the partial write operation to the double field, this test must be run on a 32-bit JVM.
+ * Of course, this test should be run on 32-bit JVM due to the possibility of non-atomic write operations
+ * to 8-byte double primitive.
  */
 @JCStressTest
 @Outcome(id = "0.0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
