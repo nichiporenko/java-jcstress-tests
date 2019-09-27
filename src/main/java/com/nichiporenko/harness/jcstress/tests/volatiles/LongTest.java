@@ -4,15 +4,15 @@ import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.J_Result;
 
 /*
- * Of course, this test should be run on 32-bit JVM due to the possibility of non-atomic write operations
- * to 8-byte long primitive.
+ * Of course, this test must be run on 32-bit JVM to see the torn value — the result of non-atomic read/write
+ * operations for an 8-byte long primitive.
  */
 @JCStressTest
 @Outcome(id = "0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "-1", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
 @Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
 @State
-public class WriteLongTest {
+public class LongTest {
 
     long v;
 

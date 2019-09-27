@@ -4,17 +4,17 @@ import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.D_Result;
 
 /*
- * Of course, this test should be run on 32-bit JVM due to the possibility of non-atomic write operations
- * to 8-byte double primitive.
+ * Of course, this test must be run on 32-bit JVM in order to correctly check the absence of visibility of torn values
+ * from other threads. Read/write operations for 8-byte volatile primitives are always atomic.
  */
 @JCStressTest
 @Outcome(id = "0.0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "123.12345678", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
-@Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
+@Outcome(id = "", expect = Expect.FORBIDDEN, desc = "Observer sees the torn value.")
 @State
-public class WriteDoubleTest {
+public class VolatileDoubleTest {
 
-    double v;
+    volatile double v;
 
     @Actor
     public void actor1(D_Result r) {
