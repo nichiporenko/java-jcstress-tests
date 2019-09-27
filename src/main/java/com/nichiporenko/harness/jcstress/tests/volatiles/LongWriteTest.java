@@ -3,18 +3,21 @@ package com.nichiporenko.harness.jcstress.tests.volatiles;
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.J_Result;
 
-/*
- * Of course, this test must be run on 32-bit JVM in order to correctly check the absence of visibility of torn values
- * from other threads. Read/write operations for 8-byte volatile primitives are always atomic.
+/**
+ * Tests non-atomic write operations to long primitive.
+ * This test must be run on 32-bit JVM to see the torn value — the partial result of
+ * non-atomic write operation to an 8-byte long primitive.
+ *
+ * @author Dmitry Nichiporenko
  */
 @JCStressTest
 @Outcome(id = "0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "-1", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
-@Outcome(id = "", expect = Expect.FORBIDDEN, desc = "Observer sees the torn value.")
+@Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
 @State
-public class VolatileLongTest {
+public class LongWriteTest {
 
-    volatile long v;
+    long v;
 
     @Actor
     public void actor1(J_Result r) {

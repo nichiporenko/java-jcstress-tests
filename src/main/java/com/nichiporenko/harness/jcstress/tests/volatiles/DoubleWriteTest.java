@@ -3,16 +3,19 @@ package com.nichiporenko.harness.jcstress.tests.volatiles;
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.D_Result;
 
-/*
- * Of course, this test must be run on 32-bit JVM to see the torn value — the result of non-atomic read/write
- * operations for an 8-byte double primitive.
+/**
+ * Tests non-atomic write operations to double primitive.
+ * This test must be run on 32-bit JVM to see the torn value — the partial result of
+ * non-atomic write operation to an 8-byte double primitive.
+ *
+ * @author Dmitry Nichiporenko
  */
 @JCStressTest
 @Outcome(id = "0.0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
 @Outcome(id = "123.12345678", expect = Expect.ACCEPTABLE, desc = "The value set. Observer sees the full update.")
 @Outcome(id = "", expect = Expect.ACCEPTABLE_INTERESTING, desc = "Observer sees the torn value.")
 @State
-public class DoubleTest {
+public class DoubleWriteTest {
 
     double v;
 
