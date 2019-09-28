@@ -21,7 +21,7 @@ public class VolatileLongWriteTest {
     volatile long v;
 
     @Actor
-    public void actor1(J_Result r) {
+    public void actor1() {
         v = -1L;
     }
 

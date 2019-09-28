@@ -20,7 +20,7 @@ public class DoubleWriteTest {
     double v;
 
     @Actor
-    public void actor1(D_Result r) {
+    public void actor1() {
         v = 123.12345678;
     }
 
