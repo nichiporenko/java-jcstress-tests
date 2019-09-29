@@ -33,7 +33,7 @@ public class VolatileIntWritesTest {
 
     @Actor
     public void actor2(II_Result r) {
-        r.r2 = c;
-        r.r1 = d;
+        r.r2 = d;
+        r.r1 = c;
     }
 }
