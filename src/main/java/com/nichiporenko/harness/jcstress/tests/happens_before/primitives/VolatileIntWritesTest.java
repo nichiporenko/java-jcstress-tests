@@ -22,18 +22,18 @@ import org.openjdk.jcstress.infra.results.II_Result;
 @State
 public class VolatileIntWritesTest {
 
-    int a;
-    volatile int b;
+    int c;
+    volatile int d;
 
     @Actor
     public void actor1() {
-        a = 5;
-        b = 10;
+        c = 5;
+        d = 10;
     }
 
     @Actor
     public void actor2(II_Result r) {
-        r.r2 = b;
-        r.r1 = a;
+        r.r2 = c;
+        r.r1 = d;
     }
 }
