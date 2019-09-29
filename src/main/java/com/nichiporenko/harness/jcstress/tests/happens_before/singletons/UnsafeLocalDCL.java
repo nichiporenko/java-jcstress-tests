@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.nichiporenko.harness.jcstress.tests.singletons;
+package com.nichiporenko.harness.jcstress.tests.happens_before.singletons;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressMeta;
@@ -33,22 +33,22 @@ import org.openjdk.jcstress.infra.results.I_Result;
 import java.util.function.Supplier;
 
 /**
- * Tests the safe double-checked locking singleton.
+ * Tests the unsafe double-checked locking singleton.
  *
  * @author Aleksey Shipilev (aleksey.shipilev@oracle.com)
  */
-public class SafeDCL {
+public class UnsafeLocalDCL {
 
     @JCStressTest
-    @JCStressMeta(GradingSafe.class)
+    @JCStressMeta(GradingUnsafe.class)
     public static class Unsafe {
         @Actor
-        public final void actor1(SafeSingletonFactory s) {
+        public final void actor1(UnsafeSingletonFactory s) {
             s.getInstance(SingletonUnsafe::new);
         }
 
         @Actor
-        public final void actor2(SafeSingletonFactory s, I_Result r) {
+        public final void actor2(UnsafeSingletonFactory s, I_Result r) {
             r.r1 = Singleton.map(s.getInstance(SingletonUnsafe::new));
         }
     }
@@ -57,29 +57,32 @@ public class SafeDCL {
     @JCStressMeta(GradingSafe.class)
     public static class Safe {
         @Actor
-        public final void actor1(SafeSingletonFactory s) {
+        public final void actor1(UnsafeSingletonFactory s) {
             s.getInstance(SingletonSafe::new);
         }
 
         @Actor
-        public final void actor2(SafeSingletonFactory s, I_Result r) {
+        public final void actor2(UnsafeSingletonFactory s, I_Result r) {
             r.r1 = Singleton.map(s.getInstance(SingletonSafe::new));
         }
     }
 
     @State
-    public static class SafeSingletonFactory {
-        private volatile Singleton instance;
+    public static class UnsafeSingletonFactory {
+        private Singleton instance; // specifically non-volatile
 
         public Singleton getInstance(Supplier<Singleton> s) {
-            if (instance == null) {
+            Singleton i = instance;
+            if (i == null) {
                 synchronized (this) {
-                    if (instance == null) {
-                        instance = s.get();
+                    i = instance;
+                    if (i == null) {
+                        i = s.get();
+                        instance = i;
                     }
                 }
             }
-            return instance;
+            return i;
         }
     }
 

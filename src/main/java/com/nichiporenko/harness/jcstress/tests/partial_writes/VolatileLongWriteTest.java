@@ -1,4 +1,4 @@
-package com.nichiporenko.harness.jcstress.tests.volatiles;
+package com.nichiporenko.harness.jcstress.tests.partial_writes;
 
 import org.openjdk.jcstress.annotations.*;
 import org.openjdk.jcstress.infra.results.J_Result;

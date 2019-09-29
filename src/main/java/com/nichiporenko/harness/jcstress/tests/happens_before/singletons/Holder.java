@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.nichiporenko.harness.jcstress.tests.singletons;
+package com.nichiporenko.harness.jcstress.tests.happens_before.singletons;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressMeta;
@@ -30,26 +30,24 @@ import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.I_Result;
 
-import java.util.function.Supplier;
-
 /**
- * Tests the unsafe double-checked locking singleton.
+ * Tests the singleton factory.
  *
  * @author Aleksey Shipilev (aleksey.shipilev@oracle.com)
  */
-public class UnsafeLocalDCL {
+public class Holder {
 
     @JCStressTest
-    @JCStressMeta(GradingUnsafe.class)
+    @JCStressMeta(GradingSafe.class)
     public static class Unsafe {
         @Actor
-        public final void actor1(UnsafeSingletonFactory s) {
-            s.getInstance(SingletonUnsafe::new);
+        public final void actor1(UnsafeHolderFactory s) {
+            s.getInstance();
         }
 
         @Actor
-        public final void actor2(UnsafeSingletonFactory s, I_Result r) {
-            r.r1 = Singleton.map(s.getInstance(SingletonUnsafe::new));
+        public final void actor2(UnsafeHolderFactory s, I_Result r) {
+            r.r1 = Singleton.map(s.getInstance());
         }
     }
 
@@ -57,33 +55,35 @@ public class UnsafeLocalDCL {
     @JCStressMeta(GradingSafe.class)
     public static class Safe {
         @Actor
-        public final void actor1(UnsafeSingletonFactory s) {
-            s.getInstance(SingletonSafe::new);
+        public final void actor1(SafeHolderFactory s) {
+            s.getInstance();
         }
 
         @Actor
-        public final void actor2(UnsafeSingletonFactory s, I_Result r) {
-            r.r1 = Singleton.map(s.getInstance(SingletonSafe::new));
+        public final void actor2(SafeHolderFactory s, I_Result r) {
+            r.r1 = Singleton.map(s.getInstance());
         }
     }
 
     @State
-    public static class UnsafeSingletonFactory {
-        private Singleton instance; // specifically non-volatile
+    public static class SafeHolderFactory {
+        public Singleton getInstance() {
+            return H.INSTANCE;
+        }
 
-        public Singleton getInstance(Supplier<Singleton> s) {
-            Singleton i = instance;
-            if (i == null) {
-                synchronized (this) {
-                    i = instance;
-                    if (i == null) {
-                        i = s.get();
-                        instance = i;
-                    }
-                }
-            }
-            return i;
+        public static class H {
+            public static final Singleton INSTANCE = new SingletonSafe();
         }
     }
 
+    @State
+    public static class UnsafeHolderFactory {
+        public Singleton getInstance() {
+            return H.INSTANCE;
+        }
+
+        public static class H {
+            public static final Singleton INSTANCE = new SingletonUnsafe();
+        }
+    }
 }

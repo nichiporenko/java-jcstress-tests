@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.nichiporenko.harness.jcstress.tests.singletons;
+package com.nichiporenko.harness.jcstress.tests.happens_before.singletons;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressMeta;

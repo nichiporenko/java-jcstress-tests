@@ -1,5 +1,3 @@
-package com.nichiporenko.harness.jcstress.tests.singletons;
-
 /*
  * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -24,6 +22,8 @@ package com.nichiporenko.harness.jcstress.tests.singletons;
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package com.nichiporenko.harness.jcstress.tests.happens_before.singletons;
+
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressMeta;
 import org.openjdk.jcstress.annotations.JCStressTest;
@@ -33,22 +33,22 @@ import org.openjdk.jcstress.infra.results.I_Result;
 import java.util.function.Supplier;
 
 /**
- * Tests the singleton factory.
+ * Tests the safe double-checked locking singleton.
  *
  * @author Aleksey Shipilev (aleksey.shipilev@oracle.com)
  */
-public class FinalWrapper {
+public class SafeDCL {
 
     @JCStressTest
     @JCStressMeta(GradingSafe.class)
     public static class Unsafe {
         @Actor
-        public final void actor1(FinalWrapperFactory s) {
+        public final void actor1(SafeSingletonFactory s) {
             s.getInstance(SingletonUnsafe::new);
         }
 
         @Actor
-        public final void actor2(FinalWrapperFactory s, I_Result r) {
+        public final void actor2(SafeSingletonFactory s, I_Result r) {
             r.r1 = Singleton.map(s.getInstance(SingletonUnsafe::new));
         }
     }
@@ -57,39 +57,29 @@ public class FinalWrapper {
     @JCStressMeta(GradingSafe.class)
     public static class Safe {
         @Actor
-        public final void actor1(FinalWrapperFactory s) {
+        public final void actor1(SafeSingletonFactory s) {
             s.getInstance(SingletonSafe::new);
         }
 
         @Actor
-        public final void actor2(FinalWrapperFactory s, I_Result r) {
+        public final void actor2(SafeSingletonFactory s, I_Result r) {
             r.r1 = Singleton.map(s.getInstance(SingletonSafe::new));
         }
     }
 
     @State
-    public static class FinalWrapperFactory {
-        private FW wrapper;
+    public static class SafeSingletonFactory {
+        private volatile Singleton instance;
 
         public Singleton getInstance(Supplier<Singleton> s) {
-            FW w = wrapper;
-            if (w == null) {
-                synchronized(this) {
-                    w = wrapper;
-                    if (w == null) {
-                        w = new FW(s.get());
-                        wrapper = w;
+            if (instance == null) {
+                synchronized (this) {
+                    if (instance == null) {
+                        instance = s.get();
                     }
                 }
             }
-            return w.instance;
-        }
-
-        private static class FW {
-            public final Singleton instance;
-            public FW(Singleton instance) {
-                this.instance = instance;
-            }
+            return instance;
         }
     }
 

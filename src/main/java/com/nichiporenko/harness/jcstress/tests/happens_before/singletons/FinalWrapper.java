@@ -1,3 +1,5 @@
+package com.nichiporenko.harness.jcstress.tests.happens_before.singletons;
+
 /*
  * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -22,32 +24,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.nichiporenko.harness.jcstress.tests.singletons;
-
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressMeta;
 import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.I_Result;
 
+import java.util.function.Supplier;
+
 /**
  * Tests the singleton factory.
  *
  * @author Aleksey Shipilev (aleksey.shipilev@oracle.com)
  */
-public class Holder {
+public class FinalWrapper {
 
     @JCStressTest
     @JCStressMeta(GradingSafe.class)
     public static class Unsafe {
         @Actor
-        public final void actor1(UnsafeHolderFactory s) {
-            s.getInstance();
+        public final void actor1(FinalWrapperFactory s) {
+            s.getInstance(SingletonUnsafe::new);
         }
 
         @Actor
-        public final void actor2(UnsafeHolderFactory s, I_Result r) {
-            r.r1 = Singleton.map(s.getInstance());
+        public final void actor2(FinalWrapperFactory s, I_Result r) {
+            r.r1 = Singleton.map(s.getInstance(SingletonUnsafe::new));
         }
     }
 
@@ -55,35 +57,40 @@ public class Holder {
     @JCStressMeta(GradingSafe.class)
     public static class Safe {
         @Actor
-        public final void actor1(SafeHolderFactory s) {
-            s.getInstance();
+        public final void actor1(FinalWrapperFactory s) {
+            s.getInstance(SingletonSafe::new);
         }
 
         @Actor
-        public final void actor2(SafeHolderFactory s, I_Result r) {
-            r.r1 = Singleton.map(s.getInstance());
+        public final void actor2(FinalWrapperFactory s, I_Result r) {
+            r.r1 = Singleton.map(s.getInstance(SingletonSafe::new));
         }
     }
 
     @State
-    public static class SafeHolderFactory {
-        public Singleton getInstance() {
-            return H.INSTANCE;
+    public static class FinalWrapperFactory {
+        private FW wrapper;
+
+        public Singleton getInstance(Supplier<Singleton> s) {
+            FW w = wrapper;
+            if (w == null) {
+                synchronized(this) {
+                    w = wrapper;
+                    if (w == null) {
+                        w = new FW(s.get());
+                        wrapper = w;
+                    }
+                }
+            }
+            return w.instance;
         }
 
-        public static class H {
-            public static final Singleton INSTANCE = new SingletonSafe();
+        private static class FW {
+            public final Singleton instance;
+            public FW(Singleton instance) {
+                this.instance = instance;
+            }
         }
     }
 
-    @State
-    public static class UnsafeHolderFactory {
-        public Singleton getInstance() {
-            return H.INSTANCE;
-        }
-
-        public static class H {
-            public static final Singleton INSTANCE = new SingletonUnsafe();
-        }
-    }
 }
