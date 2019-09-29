@@ -6,7 +6,7 @@ Java Concurrency Stress tests.
 mvn clean install
 java -jar target/jcstress.jar -v
 ```
-### 2. On a specific JVM (for example, on a 32-bit)
+### 2. On a specific JVM (for example, on a 32-bit JVM)
 ```
 mvn clean install
 "C:\Program Files (x86)\Java\jre1.8.0_221\bin\java.exe" -jar target/jcstress.jar -v
