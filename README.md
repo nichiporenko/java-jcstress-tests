@@ -1,5 +1,7 @@
 # Java JCStress tests
 Java Concurrency Stress tests.
+
+https://openjdk.java.net/projects/code-tools/jcstress/
 ## Running tests:
 ### 1. On a default JVM
 ```
