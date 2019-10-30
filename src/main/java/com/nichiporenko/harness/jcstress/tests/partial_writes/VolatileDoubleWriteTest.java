@@ -8,7 +8,8 @@ import org.openjdk.jcstress.infra.results.D_Result;
  * This test must be run on 32-bit JVM in order to properly check the absence of
  * visibility of torn values from another thread. Write operation to an 8-byte
  * volatile double primitive is always atomic.
- * * @author Dmitry Nichiporenko
+ *
+ * @author Dmitry Nichiporenko
  */
 @JCStressTest
 @Outcome(id = "0.0", expect = Expect.ACCEPTABLE, desc = "Default value for the field.")
